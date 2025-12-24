@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .container{
+            width: 100vw;
+            height: 100vh;
+            background-color: #88C6EC;
+            background-image: linear-gradient(135deg,#88C6EC 0%,#9599E2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .box{
+            height: 600px;
+            width: 400px;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            border-radius: 20px;
+            /* gap: 15px; */
+        }
+        .box h2{
+            /* padding: 15px; */
+            text-align: center;
+        }
+        .box p{
+            text-align: center;
+            /* padding: 5px; */
+        }
+        .box button{
+            background-color: navy;
+            color: white;
+            text-align: center;
+            height: 50px;
+            width: 320px;
+            border-radius:8px;
+            margin-left: 20px;
+            margin-right: 20px;
+            
+        }
+        .box h3{
+            /* padding: 10px; */
+            text-align: center;
+        }
+        .box img{
+            border-radius: 20px;
+        }
+        .card{
+           display: flex;
+           justify-content: space-between; 
+           align-items: center;
+            /* padding-right: 20px;
+           padding-left: 20px;  */
+           /* margin: 50px; */
+           background-color: #8BC6EC;
+           border-radius: 10px;
+           width: 350px;
+           height: 100px;
+        }
+        .leftBox{
+          /* width: fit-content; */
+          display: flex;
+           gap: 10px; 
+          /* height: 100%; */
+        }
+        .leftBox img{
+          height: 3.5rem;
+         width: 3.5rem; 
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="box">
+         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQvxPqVStzythDado8Fy0tUkVhgy2lUbbQ73Q&s">
+         <h2>Order Summary</h2>
+         <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Libero eveniet vel vitae accusantium asperiores nostrum magnam ullam blanditiis omnis? Magni, veniam! Temporibus nostrum rem, veniam obcaecati aliquam dolore! Vitae, ullam.</p>
+         
+         <div class="card">
+            <div class="leftBox">
+            <div class="imgBox">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQJktXxlcrhN3Avzb8ecmOVbApomORclqcxQ&s">
+            </div>
+            <div class="textAmountBox">
+                <p>Amount</p>
+                <p>$599.9/year</p>
+            </div>
+            </div>
+            <div class="rightBox">
+                <a href="#">Change</a>
+            </div>
+        </div>
+         <button>Proceed to Payment</button>
+         <h3>Cancel Order</h3>
+        </div>
+    </div>
+</body>
+</html>

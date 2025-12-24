@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="project.css">
+</head>
+<body>
+    <!-- COLLAPSED icon (top-left) -->
+<div id="sidebarMini" class="sidebar-mini" title="Open menu">CQ</div>
+
+<!-- Full overlay sidebar (hidden until clicked) -->
+<div id="sidebarOverlay" class="sidebar-overlay" aria-hidden="true">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <div class="brand">
+      <div class="logo">CQ</div>
+      <div class="brand-text"><h1>Quiz Portal</h1><p class="muted">Live classroom quizzes</p></div>
+    </div>
+    <button id="closeSidebar" class="collapse-btn" title="Close">✕</button>
+  </div>
+
+  <nav class="nav" id="navListOverlay">
+    <button class="nav-btn active" id="nav_dashboard" onclick="showPanel('dashboard')"><span class="icon">🏠</span><span class="label">Dashboard</span></button>
+    <button class="nav-btn" id="nav_profile" onclick="showPanel('profile')"><span class="icon">👤</span><span class="label">Profile</span></button>
+    <button class="nav-btn" id="nav_quiz" onclick="showPanel('quiz')"><span class="icon">🧠</span><span class="label" id="nav_quiz_label">Take / Create Quiz</span></button>
+    <button class="nav-btn" id="nav_leader" onclick="showPanel('leader')"><span class="icon">🏆</span><span class="label">Leaderboard</span></button>
+    <button class="nav-btn" id="nav_analytics" onclick="showPanel('analytics')"><span class="icon">📊</span><span class="label">Analytics</span></button>
+  </nav>
+
+  <div class="profile-box" id="sidebarProfileOverlay">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div id="sbAvatarOverlay" style="width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#06b6d4,#4f46e5);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800">U</div>
+      <div><div id="sbNameOverlay" style="font-weight:800">Guest</div><div class="small" id="sbRoleOverlay">—</div></div>
+    </div>
+    <div style="margin-top:10px;display:flex;gap:8px">
+      <button class="btn flat" onclick="logout()">Logout</button>
+      <button class="btn ghost" onclick="copyShareLink()">Share</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== AUTH OVERLAY (dynamic fields) ===== -->
+<div id="authOverlay">
+  <div class="auth-card">
+    <!-- Login Section -->
+    <div class="auth-section">
+      <h2>Login</h2>
+      <p class="muted">Enter credentials to continue</p>
+
+      <label>Role</label>
+      <select id="loginRole" onchange="updateLoginFields()">
+        <option value="student">Student</option>
+        <option value="faculty">Faculty</option>
+      </select>
+
+      <label id="loginIdLabel">Name or Enrollment</label>
+      <input id="loginId" placeholder="Name or Enrollment">
+
+      <!-- Dynamic ID field (enrollment or faculty id) appears if role requires) -->
+      <div id="loginExtraWrap" style="display:none">
+        <label id="loginExtraLabel">Enrollment No</label>
+        <input id="loginExtra" placeholder="">
+      </div>
+
+      <label>Password</label>
+      <input id="loginPass" placeholder="Password" type="password">
+
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn" onclick="doLogin()">Login</button>
+        <button class="btn ghost" onclick="showSignupSection()">Create New Account</button>
+      </div>
+
+      <p class="small-note">Select role to reveal the required fields (Enrollment for students, Faculty ID for faculty).</p>
+    </div>
+
+    <!-- Signup Section -->
+    <div class="auth-section" id="signupSection">
+      <h2>Create Account</h2>
+      <p class="muted">Sign up as Student or Faculty</p>
+
+      <label>Role</label>
+      <select id="signupRole" onchange="updateSignupFields()">
+        <option value="student">Student</option>
+        <option value="faculty">Faculty</option>
+      </select>
+
+      <label>Name</label>
+      <input id="signupName" placeholder="Full name">
+
+      <div id="signupExtraWrap">
+        <label id="signupExtraLabel">Enrollment No</label>
+        <input id="signupExtra" placeholder="Enrollment number (students)">
+      </div>
+
+      <label>Password</label>
+      <input id="signupPass" type="password" placeholder="Create a password">
+
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn" onclick="doSignup()">Create account</button>
+        <button class="btn ghost" onclick="showLoginSection()">Back to login</button>
+      </div>
+
+      <p class="small-note">Sign up fields change automatically based on selected role.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== APP SHELL (main content) ===== -->
+<div class="app" id="appRoot" style="display:none">
+  <main class="main">
+    <div class="topbar">
+      <div><div class="title" id="mainTitle">Dashboard</div><div class="subtitle" id="mainSubtitle">Overview</div></div>
+      <div style="display:flex;gap:12px;align-items:center">
+        <div id="liveBadge" style="display:none;background:#eef2ff;padding:6px 10px;border-radius:999px;color:#1e40af;font-weight:800">LIVE</div>
+        <div class="timer-pill" id="globalTimer" style="display:none">⏱ <span id="globalTimerText">00:00</span></div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <section id="panel_dashboard" class="card grid">
+      <div>
+        <h3 id="welcome">Welcome, Student</h3>
+        <p class="muted" id="dashSub">Last quiz summary and active quizzes</p>
+
+        <div style="margin-top:12px" class="card">
+          <div style="display:flex;gap:12px;align-items:center">
+            <div style="font-weight:800;font-size:20px" id="stat_quizzes">0</div>
+            <div><div class="muted">Quizzes Published</div></div>
+            <div style="width:12px"></div>
+            <div style="font-weight:800;font-size:20px" id="stat_submissions">0</div>
+            <div><div class="muted">Total Submissions</div></div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px" class="card">
+          <h4>Active Quiz</h4>
+          <div id="activeQuizArea" class="muted">No live quiz</div>
+          <div style="margin-top:8px">
+            <button class="btn" onclick="refreshAll()">Refresh</button>
+            <button class="btn ghost" onclick="simulateOpen()">Open new tab</button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <h4>Last Attempt</h4>
+          <div id="lastAttemptArea" class="muted">No attempts</div>
+        </div>
+        <div style="height:12px"></div>
+        <div class="card">
+          <h4>Your Quick Stats</h4>
+          <div id="quickStats" class="muted">Loading...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROFILE -->
+    <section id="panel_profile" class="card" style="display:none">
+      <h3>Profile</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+        <div>
+          <p><strong>Name:</strong> <span id="profileName"></span></p>
+          <p><strong>Role:</strong> <span id="profileRole"></span></p>
+          <p><strong>Enrollment / ID:</strong> <span id="profileEnroll"></span></p>
+        </div>
+        <div>
+          <p><strong>Quizzes created:</strong> <span id="profileCreated">0</span></p>
+          <p><strong>Quizzes taken:</strong> <span id="profileTaken">0</span></p>
+          <p><strong>Accuracy:</strong> <span id="profileAcc">0%</span></p>
+        </div>
+      </div>
+      <div style="margin-top:12px">
+        <button class="logout-btn btn" onclick="logout()">Logout</button>
+      </div>
+    </section>
+
+    <!-- QUIZ PANEL -->
+    <section id="panel_quiz" class="card" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><h3>Quizzes</h3><div class="muted">Create (faculty) or take (student)</div></div>
+        <div><button class="btn" id="btnPublishLive" style="display:none" onclick="publishLatest()">Publish Latest Live</button></div>
+      </div>
+
+      <div id="quizContent" style="margin-top:12px">
+        <!-- Faculty Create -->
+        <div id="facultyCreate" style="display:none">
+          <h4>Create quiz</h4>
+          <label>Quiz Title</label><input id="createTitle" placeholder="Title">
+          <label>Duration (seconds)</label><input id="createDuration" type="number" value="300">
+          <div id="questionBuilder" style="margin-top:12px"></div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn" onclick="addQuestion()">+ Add Question</button>
+            <button class="btn ghost" onclick="saveQuiz()">Save Quiz</button>
+            <button class="btn ghost" onclick="saveAndPublish()">Save & Publish</button>
+          </div>
+          <div style="margin-top:14px">
+            <h4>Saved quizzes</h4><div id="savedQuizList" class="muted">No quizzes</div>
+          </div>
+        </div>
+
+        <!-- Student list -->
+        <div id="studentList" style="display:none">
+          <h4>Available Quizzes</h4><div id="availableQuizzes" class="muted">Loading...</div>
+        </div>
+
+        <!-- Play area -->
+        <div id="playArea" style="display:none;margin-top:12px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="flex:1"><div style="font-weight:800" id="playTitle">Quiz</div><div class="small muted" id="playMeta">teacher</div></div>
+            <div class="timer-pill" id="playTimerPill">⏱ <span id="playTimerText">05:00</span></div>
+          </div>
+          <div class="card" style="margin-top:12px">
+            <div id="questionIndex" style="font-weight:700">Q1 / N</div>
+            <div id="questionText" style="margin-top:8px">Question text</div>
+            <div class="options" id="questionOptions"></div>
+            <div class="progress"><span id="progressBar"></span></div>
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button class="btn ghost" onclick="prevQuestion()">Prev</button>
+              <button class="btn ghost" onclick="nextQuestion()">Next</button>
+              <div class="right"><button class="btn" onclick="submitAttempt()">Submit Quiz</button></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- LEADERBOARD -->
+    <section id="panel_leader" class="card" style="display:none">
+      <h3>Leaderboard</h3>
+      <div style="display:flex;gap:12px;align-items:center">
+        <div class="small">Select quiz</div>
+        <select id="leaderSelect" style="width:320px;margin-left:8px" onchange="renderLeaderboard()"><option value="__overall">Overall</option></select>
+        <div class="right small muted">Auto-refresh</div>
+      </div>
+
+      <div style="margin-top:12px">
+        <!-- Graph -->
+        <div class="leader-graph" id="leaderGraphWrap">
+          <svg id="leaderGraphSVG" viewBox="0 0 600 220" preserveAspectRatio="none"></svg>
+          <div style="font-size:13px;color:#475569;margin-top:8px">Bar graph shows top students (total correct). It updates after quiz submission.</div>
+        </div>
+
+        <!-- Table -->
+        <div style="margin-top:12px">
+          <table>
+            <thead><tr><th>Rank</th><th>Name</th><th>Score</th><th>Time(s)</th><th>When</th></tr></thead>
+            <tbody id="leaderTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ANALYTICS -->
+    <section id="panel_analytics" class="card" style="display:none">
+      <h3>Analytics</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+        <div class="card"><h4>Your Attempts (30d)</h4><div id="analyticsAttempts" class="muted">Loading...</div></div>
+        <div class="card"><h4>Accuracy & Streaks</h4><div id="analyticsMetrics" class="muted">Loading...</div></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+<script src="project.js"></script>
+</body>
+</html>
